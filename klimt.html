@@ -185,12 +185,9 @@ render();
 
 const EXERCISE_NAME = "Κλιμτ — Το φιλί";
 function saveScore(correct, total) {
-  fetch('https://script.google.com/macros/s/AKfycbzE7K7cyg7byq4akonoiYAADxvqALfV4VL_WVe_BAK77fV0adxNDqrWgGjrCzwc0yP9xQ/exec', {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ exercise: EXERCISE_NAME, score: correct, total: total })
-  }).catch(function(){});
+  var url = 'https://script.google.com/macros/s/AKfycbzE7K7cyg7byq4akonoiYAADxvqALfV4VL_WVe_BAK77fV0adxNDqrWgGjrCzwc0yP9xQ/exec?exercise=' + encodeURIComponent(EXERCISE_NAME) + '&score=' + correct + '&total=' + total;
+  var img = new Image();
+  img.src = url;
 }
 </script>
 </body>
