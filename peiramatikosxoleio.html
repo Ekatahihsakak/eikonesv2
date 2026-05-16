@@ -80,8 +80,7 @@ render();
 const EXERCISE_NAME = "Πικιώνης — Πειραματικό σχολείο";
 function saveScore(correct, total) {
   var url = 'https://script.google.com/macros/s/AKfycbzE7K7cyg7byq4akonoiYAADxvqALfV4VL_WVe_BAK77fV0adxNDqrWgGjrCzwc0yP9xQ/exec?exercise=' + encodeURIComponent(EXERCISE_NAME) + '&score=' + correct + '&total=' + total;
-  var img = new Image();
-  img.src = url;
+  fetch(url, {mode: 'no-cors'}).catch(function(){});
 }
 </script>
 </body>
