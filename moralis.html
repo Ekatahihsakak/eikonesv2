@@ -184,9 +184,29 @@
     letter-spacing: 0.04em;
     margin-top: 0.5rem;
   }
+
+  .btn-back {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.4rem 0.9rem;
+    background: #2c1f0e;
+    color: #f5f0e8;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-family: Georgia, serif;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(44,31,14,0.2);
+  }
+
 </style>
 </head>
 <body>
+<a href="index.html" class="btn-back">← Μενού</a>
 
 <div class="header">
   <div class="sub">Άσκηση Κατανόησης</div>
@@ -310,6 +330,7 @@ function checkAnswers() {
   checked = true;
   const blanks = SEGMENTS.filter(s => s.type === 'blank');
   const correct = blanks.filter(b => filled[b.id] === b.answer).length;
+  saveScore(correct, blanks.length);
   const scoreEl = document.getElementById('score');
   scoreEl.classList.add('show');
   if (correct === blanks.length) {
@@ -331,6 +352,16 @@ function reset() {
 }
 
 render();
+
+const EXERCISE_NAME = "Μόραλης — Επιτύμβια Σύνθεση";
+function saveScore(correct, total) {
+  fetch('https://script.google.com/macros/s/AKfycbzE7K7cyg7byq4akonoiYAADxvqALfV4VL_WVe_BAK77fV0adxNDqrWgGjrCzwc0yP9xQ/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ exercise: EXERCISE_NAME, score: correct, total: total })
+  }).catch(function(){});
+}
 </script>
 </body>
 </html>
