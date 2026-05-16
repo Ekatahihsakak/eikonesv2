@@ -14,9 +14,29 @@ body{min-height:100vh;background:#f5f0e8;font-family:Georgia,serif;padding:1.5re
 .blank{display:inline-block;min-width:110px;padding:0 .4rem;border-bottom:2px solid #8b7355;border-radius:3px 3px 0 0;text-align:center;font-size:.92rem;cursor:pointer;transition:.15s;vertical-align:bottom}.blank.long{min-width:155px}.blank.empty{color:#bbb;font-style:italic}.blank.filled{background:#faf6f0;color:#2c1f0e}.blank.correct{background:#eaf4ea;border-color:#5a8a5a;color:#3a6b3a}.blank.wrong{background:#fdf0ef;border-color:#c0392b;color:#c0392b}.blank.active-target{border-color:#2c1f0e;background:#f0ebe0}
 .buttons{display:flex;gap:.6rem;justify-content:center;margin-bottom:1rem}.btn-check{padding:.65rem 1.6rem;background:#2c1f0e;color:#f5f0e8;border:none;border-radius:6px;font-size:.9rem;font-family:Georgia,serif;cursor:pointer;letter-spacing:.05em}.btn-check:disabled{background:#c5bfb4;color:#aaa;cursor:default}.btn-reset{padding:.65rem 1.4rem;background:transparent;color:#8b7355;border:1.5px solid #8b7355;border-radius:6px;font-size:.9rem;font-family:Georgia,serif;cursor:pointer;letter-spacing:.05em}
 .score{text-align:center;padding:.7rem 1rem;border-radius:8px;font-size:.95rem;margin-bottom:1rem;display:none}.score.show{display:block}.score.perfect{background:#eaf4ea;border:1.5px solid #5a8a5a;color:#3a6b3a}.score.partial{background:#fdf6ee;border:1.5px solid #c9a96e;color:#7a5c2e}.hint{text-align:center;font-size:.72rem;color:#b0a48a;letter-spacing:.04em;margin-top:.5rem}
+
+  .btn-back {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.4rem 0.9rem;
+    background: #2c1f0e;
+    color: #f5f0e8;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-family: Georgia, serif;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(44,31,14,0.2);
+  }
+
 </style>
 </head>
 <body>
+<a href="index.html" class="btn-back">← Μενού</a>
 <div class="header"><div class="sub">Άσκηση Κατανόησης</div><h1>Δημήτρης Πικιώνης<br>«Πειραματικό σχολείο»</h1><div class="line"></div></div>
 <div class="bank-box"><div class="bank-label">Λέξεις</div><div class="bank-words" id="bank"></div></div>
 <div class="text-box" id="textbox"></div>
@@ -52,9 +72,20 @@ function render(){const bank=document.getElementById("bank");const used=Object.v
 function selectWord(w){if(Object.values(filled).includes(w))return;selectedWord=selectedWord===w?null:w;checked=false;document.getElementById("score").classList.remove("show");render()}
 function fillBlank(id){if(!selectedWord)return;filled[id]=selectedWord;selectedWord=null;checked=false;document.getElementById("score").classList.remove("show");render()}
 function removeFromBlank(id){delete filled[id];selectedWord=null;checked=false;document.getElementById("score").classList.remove("show");render()}
-function checkAnswers(){checked=true;const blanks=SEGMENTS.filter(s=>s.type==="blank");const correct=blanks.filter(b=>filled[b.id]===b.answer).length;const score=document.getElementById("score");score.classList.add("show");if(correct===blanks.length){score.className="score show perfect";score.textContent="🎉 Μπράβο! Όλες οι απαντήσεις είναι σωστές!"}else{score.className="score show partial";score.textContent=`Σωστές απαντήσεις: ${correct} / ${blanks.length}`}render()}
+function checkAnswers(){checked=true;const blanks=SEGMENTS.filter(s=>s.type==="blank");const correct=blanks.filter(b=>filled[b.id]===b.answer).length;
+ saveScore(correct, blanks.length);const score=document.getElementById("score");score.classList.add("show");if(correct===blanks.length){score.className="score show perfect";score.textContent="🎉 Μπράβο! Όλες οι απαντήσεις είναι σωστές!"}else{score.className="score show partial";score.textContent=`Σωστές απαντήσεις: ${correct} / ${blanks.length}`}render()}
 function reset(){filled={};selectedWord=null;checked=false;document.getElementById("score").classList.remove("show");render()}
 render();
+
+const EXERCISE_NAME = "Πικιώνης — Πειραματικό σχολείο";
+function saveScore(correct, total) {
+  fetch('https://script.google.com/macros/s/AKfycbzE7K7cyg7byq4akonoiYAADxvqALfV4VL_WVe_BAK77fV0adxNDqrWgGjrCzwc0yP9xQ/exec', {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ exercise: EXERCISE_NAME, score: correct, total: total })
+  }).catch(function(){});
+}
 </script>
 </body>
 </html>
