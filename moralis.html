@@ -235,10 +235,11 @@ function goPhase3(){
 }
 
 function checkPhase3(){
+  const txt=document.getElementById('p3input').value.trim();
   document.getElementById('p3answer').classList.add('show');
   document.getElementById('btnCheck').style.display='none';
   document.getElementById('hint').textContent='Σύγκρινε το κείμενό σου με το σωστό παραπάνω';
-  saveScore(0,1);
+  saveScore(0,1,txt);
 }
 
 function showScore(correct,total){
@@ -247,9 +248,8 @@ function showScore(correct,total){
   else{s.className='score show partial';s.textContent='Σωστές απαντήσεις: '+correct+' / '+total;}
 }
 
-function saveScore(correct,total){
-  var url='https://script.google.com/macros/s/AKfycbzE7K7cyg7byq4akonoiYAADxvqALfV4VL_WVe_BAK77fV0adxNDqrWgGjrCzwc0yP9xQ/exec?exercise='+encodeURIComponent('Μόραλης — Επιτύμβια Σύνθεση')+'&score='+correct+'&total='+total;
-  fetch(url,{mode:'no-cors'}).catch(function(){});
+function saveScore(correct,total,text){text=text||'';var url='https://script.google.com/macros/s/AKfycbzE7K7cyg7byq4akonoiYAADxvqALfV4VL_WVe_BAK77fV0adxNDqrWgGjrCzwc0yP9xQ/exec?exercise='+encodeURIComponent(EXERCISE_NAME)+'&score='+correct+'&total='+total+'&text='+encodeURIComponent(text);fetch(url,{mode:'no-cors'}).catch(function(){});
+}).catch(function(){});
 }
 
 renderPhase1();
