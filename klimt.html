@@ -37,11 +37,14 @@ body{min-height:100vh;background:#f5f0e8;font-family:Georgia,serif;padding:1.5re
 .blank-input.correct{background:#eaf4ea;border-color:#5a8a5a;color:#3a6b3a}
 .blank-input.wrong{background:#fdf0ef;border-color:#c0392b;color:#c0392b}
 .blank-input:focus{border-color:#2c1f0e;background:#f0ebe0}
-.p3-area{background:#fff;border:1px solid #d6cabb;border-radius:12px;padding:1.4rem 1.2rem;margin-bottom:1.2rem;box-shadow:0 2px 12px rgba(44,31,14,.06)}
-.p3-textarea{width:100%;min-height:180px;border:none;border-bottom:2px solid #8b7355;background:transparent;font-family:Georgia,serif;font-size:1rem;line-height:1.8;color:#2c1f0e;resize:vertical;outline:none;padding:.5rem 0}
-.p3-answer{display:none;margin-top:1.2rem;padding:1rem;background:#f5f0e8;border-radius:8px;border-left:3px solid #8b7355;font-size:.95rem;line-height:1.8;color:#2c1f0e}
-.p3-answer.show{display:block}
-.p3-answer .label{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:#8b7355;margin-bottom:.5rem}
+.p3-area{display:none}
+.question-card{background:#fff;border:1px solid #d6cabb;border-radius:12px;padding:1.2rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(44,31,14,.06)}
+.question-text{font-size:.95rem;line-height:1.6;margin-bottom:.8rem;color:#2c1f0e;font-weight:bold}
+.question-textarea{width:100%;min-height:100px;border:1px solid #d6cabb;border-radius:8px;background:#faf6f0;font-family:Georgia,serif;font-size:.9rem;line-height:1.7;color:#2c1f0e;resize:vertical;outline:none;padding:.6rem .8rem;transition:.15s}
+.question-textarea:focus{border-color:#8b7355;background:#fff}
+.answer-box{display:none;margin-top:.8rem;padding:.8rem 1rem;background:#eaf4ea;border-radius:8px;border-left:3px solid #5a8a5a;font-size:.88rem;line-height:1.7;color:#2c1f0e;white-space:pre-line}
+.answer-box .answer-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#5a8a5a;margin-bottom:.4rem}
+.answer-box.show{display:block}
 .buttons{display:flex;gap:.6rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
 .btn-check{padding:.65rem 1.6rem;background:#2c1f0e;color:#f5f0e8;border:none;border-radius:6px;font-size:.9rem;font-family:Georgia,serif;cursor:pointer;letter-spacing:.05em}
 .btn-check:disabled{background:#c5bfb4;color:#aaa;cursor:default}
@@ -69,20 +72,14 @@ body{min-height:100vh;background:#f5f0e8;font-family:Georgia,serif;padding:1.5re
   <div class="bank-words" id="bank"></div>
 </div>
 <div class="text-box" id="textbox"></div>
-<div class="p3-area" id="p3area" style="display:none">
-  <textarea class="p3-textarea" id="p3input" placeholder="Γράψε εδώ ό,τι θυμάσαι από το κείμενο..."></textarea>
-  <div class="p3-answer" id="p3answer">
-    <div class="label">Σωστό κείμενο</div>
-    <div id="p3correct"></div>
-  </div>
-</div>
+<div class="p3-area" id="p3area"></div>
 <div class="score" id="score"></div>
 <div class="buttons">
   <button class="btn-check" id="btnCheck" disabled onclick="checkAnswers()">Έλεγχος</button>
   <button class="btn-reset" onclick="reset()">Επαναφορά</button>
   <button class="btn-next" id="btnNext" onclick="goNext()">Φάση 2 — Χωρίς λέξεις →</button>
 </div>
-<div class="hint" id="hint">Οι λέξεις είναι ανακατεμένες. Πάτα μια λέξη, μετά πάτα το κενό • Πάτα συμπληρωμένο κενό για αφαίρεση</div>
+<div class="hint" id="hint">Πάτα μια λέξη, μετά πάτα το κενό • Πάτα συμπληρωμένο κενό για αφαίρεση</div>
 
 <script>
 const WORDS=["γυναικεία","διάκοσμο","εσωστρέφειας","χρυσού","φιλί","λαμπερών","συγκρατεί","Βιέννης","γνωστά","τρυφερότητα","αστική","σώματα"];
@@ -113,7 +110,8 @@ const SEGMENTS=[
 {type:"blank",id:11,answer:"αστική"},
 {type:"text",content:" βιεννέζικη κοινωνία."}
 ];
-const FULL_TEXT="Εικ. 19. Γκούσταβ Κλιμτ (Gustav Klimt, 1862-1918), «Το φιλί» (1907-1908), λάδι, 1.80 x 1.80 μ., λεπτομέρεια από το διάκοσμο του ανακτόρου Στόκλετ στη Βιέννης, Αυστριακή Πινακοθήκη. «Το φιλί» είναι από τα πιο γνωστά έργα του Κλιμτ. Αποτελεί τμήμα του διακόσμου της τραπεζαρίας της βίλας Στόκλετ, στα περίχωρα της Βιέννης. Ο ζωγράφος ένωσε τα δύο σώματα σε έναν ποταμό από διακοσμητικά στοιχεία, από ανταύγειες χρυσού και λαμπερών χρωμάτων. Το χέρι της γυναίκας, γύρω από το λαιμό του άνδρα, είναι σφιγμένο με τα δάχτυλα διπλωμένα, ένδειξη εσωστρέφειας. Ο άνδρας κρατά τη γυναίκα με τρυφερότητα, τη συγκρατεί ανάλαφρα, και αυτή του προσφέρει το μάγουλό της για φιλί. Ο Κλιμτ ζωγράφισε πολλά γυναικεία πορτρέτα, κυρίως για την αστική βιεννέζικη κοινωνία.";
+const QUESTIONS=[{"q": "α. Ποια στοιχεία συνδυάζει στα έργα του ο Αυστριακός ζωγράφος Γκούσταβ Κλιμτ; (μον.10)", "a": "Ο Αυστριακός ζωγράφος Κλιμτ συνδυάζει τη γραμμική απλότητα με τα πλούσια χρώματα που σχηματίζονται από γεωμετρικά στοιχεία. Στα έργα του ο χώρος καταργείται εξ αιτίας της λάμψης του φόντου, που δημιουργεί μια μυστηριώδη ατμόσφαιρα."}, {"q": "β. Ποια στοιχεία χρησιμοποιεί ο καλλιτέχνης για να αναδείξει τα συναισθήματα των μορφών που συμμετέχουν στο έργο του; (μον.10)", "a": "«Το φιλί» είναι από τα πιο γνωστά έργα του Κλιμτ. Ο ζωγράφος ένωσε τα δύο σώματα σε έναν ποταμό από διακοσμητικά στοιχεία, από ανταύγειες χρυσού και λαμπερών χρωμάτων. Το χέρι της γυναίκας, γύρω από το λαιμό του άνδρα, είναι σφιγμένο με τα δάχτυλα διπλωμένα, ένδειξη εσωστρέφειας. Ο άνδρας κρατά τη γυναίκα με τρυφερότητα, τη συγκρατεί ανάλαφρα, και αυτή του προσφέρει το μάγουλό της για φιλί."}, {"q": "γ. Τι σημαίνει ο όρος Αρ Νουβό (Art Nouveau) και πώς αλλιώς ονομάζεται; (μον. 5)", "a": "Ο όρος Αρ Νουβό (Art Nouveau) σημαίνει Νέα Τέχνη γνωστή και ως Jugendstil και Liberty."}];
+const EXERCISE_NAME="Κλιμτ — Το φιλί";
 
 function removeAccents(str){return str.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();}
 
@@ -172,9 +170,14 @@ function reset(){
   filled={};selectedWord=null;checked=false;
   document.getElementById('score').classList.remove('show');
   document.getElementById('btnNext').style.display='none';
+  document.getElementById('btnCheck').style.display='inline-block';
   if(phase===1)renderPhase1();
   else if(phase===2)renderPhase2();
-  else{document.getElementById('p3input').value='';document.getElementById('p3answer').classList.remove('show');}
+  else{
+    document.querySelectorAll('.question-textarea').forEach(t=>t.value='');
+    document.querySelectorAll('.answer-box').forEach(a=>a.classList.remove('show'));
+    document.getElementById('btnCheck').disabled=false;
+  }
 }
 
 function goPhase2(){
@@ -221,29 +224,45 @@ function checkPhase2(){
   });
   showScore(correct,inputs.length);saveScore(correct,inputs.length);
   const btn=document.getElementById('btnNext');
-  btn.textContent='Φάση 3 — Γράψε από μνήμης →';
+  btn.textContent='Φάση 3 — Ερωτήσεις →';
   btn.className='btn-next p3';btn.style.display='inline-block';
 }
 
 function goPhase3(){
   phase=3;
   document.getElementById('phaseBadge').className='phase-badge p3';
-  document.getElementById('phaseBadge').innerHTML='<span>Φάση 3 — Από μνήμης</span>';
+  document.getElementById('phaseBadge').innerHTML='<span>Φάση 3 — Ερωτήσεις</span>';
   document.getElementById('textbox').style.display='none';
-  document.getElementById('p3area').style.display='block';
-  document.getElementById('btnNext').style.display='none';
   document.getElementById('score').classList.remove('show');
-  document.getElementById('hint').textContent='Γράψε ολόκληρο το κείμενο από μνήμη και πάτα Έλεγχος';
+  document.getElementById('btnNext').style.display='none';
+  document.getElementById('hint').textContent='Απάντησε στις ερωτήσεις και πάτα Έλεγχος για να δεις τις σωστές απαντήσεις';
   document.getElementById('btnCheck').disabled=false;
-  document.getElementById('p3correct').textContent=FULL_TEXT;
+  document.getElementById('btnCheck').style.display='inline-block';
+
+  const p3=document.getElementById('p3area');
+  p3.style.display='block';
+  p3.innerHTML='';
+  QUESTIONS.forEach((q,i)=>{
+    const card=document.createElement('div');
+    card.className='question-card';
+    card.innerHTML=`
+      <div class="question-text">${q.q}</div>
+      <textarea class="question-textarea" id="q${i}" rows="3" placeholder="Γράψε την απάντησή σου..."></textarea>
+      <div class="answer-box" id="a${i}">
+        <div class="answer-label">Σωστή απάντηση</div>
+        <div>${q.a}</div>
+      </div>`;
+    p3.appendChild(card);
+  });
 }
 
 function checkPhase3(){
-  const txt=document.getElementById('p3input').value.trim();
-  document.getElementById('p3answer').classList.add('show');
+  QUESTIONS.forEach((_,i)=>{
+    document.getElementById('a'+i).classList.add('show');
+  });
   document.getElementById('btnCheck').style.display='none';
-  document.getElementById('hint').textContent='Σύγκρινε το κείμενό σου με το σωστό παραπάνω';
-  saveScore(0,1,txt);
+  document.getElementById('hint').textContent='Σύγκρινε τις απαντήσεις σου με τις σωστές';
+  saveScore(0,QUESTIONS.length);
 }
 
 function showScore(correct,total){
@@ -252,8 +271,9 @@ function showScore(correct,total){
   else{s.className='score show partial';s.textContent='Σωστές απαντήσεις: '+correct+' / '+total;}
 }
 
-function saveScore(correct,total,text){text=text||'';var url='https://script.google.com/macros/s/AKfycbzE7K7cyg7byq4akonoiYAADxvqALfV4VL_WVe_BAK77fV0adxNDqrWgGjrCzwc0yP9xQ/exec?exercise='+encodeURIComponent(EXERCISE_NAME)+'&score='+correct+'&total='+total+'&text='+encodeURIComponent(text);fetch(url,{mode:'no-cors'}).catch(function(){});
-}).catch(function(){});
+function saveScore(correct,total){
+  var url='https://script.google.com/macros/s/AKfycbzE7K7cyg7byq4akonoiYAADxvqALfV4VL_WVe_BAK77fV0adxNDqrWgGjrCzwc0yP9xQ/exec?exercise='+encodeURIComponent(EXERCISE_NAME)+'&score='+correct+'&total='+total;
+  fetch(url,{mode:'no-cors'}).catch(function(){});
 }
 
 renderPhase1();
